@@ -1,4 +1,8 @@
 #!/bin/bash
+
+#base directory
+baseDir=/home/pi/pi-pxeboot/server/
+
 #Installs and Upgrades
 sudo apt-get -y update
 sudo apt-get -y full-upgrade
@@ -6,8 +10,9 @@ sudo apt-get -y install rpi-eeprom
 sudo apt-get -y install rsync dnsmasq nfs-kernel-server
 
 sudo mkdir -p /nfs/client1
-sudo -p /tftpboot
+sudo mkdir -p /tftpboot
 sudo chmod 777 /tftpboot
+
 sudo rsync -xa --progress --exclude /nfs/client1 \
     --exclude /etc/systemd/network/10-eth0.netdev \
     --exclude /etc/systemd/network/11-eth0.network \
@@ -23,21 +28,21 @@ sudo chroot . dpkg-reconfigure openssh-server
 sudo chroot . systemctl enable ssh
 sudo umount dev sys proc
 
-sudo cp 10-eth0.netdev /etc/systemd/network/10-eth0.netdev
-sudo cp 11-eth0.network /etc/systemd/network/11-eth0.network
+sudo cp ${baseDir}/10-eth0.netdev /etc/systemd/network/10-eth0.netdev
+sudo cp ${baseDir}/11-eth0.network /etc/systemd/network/11-eth0.network
 
 sudo systemctl stop dhcpcd
 sudo systemctl disable dhcpcd
-sudo cp dnsmasq.conf /etc/dnsmasq.conf
+sudo cp ${baseDir}/dnsmasq.conf /etc/dnsmasq.conf
 
 sudo cp -r /boot/* /tftpboot/
 sudo systemctl enable systemd-networkd
 sudo systemctl enable dnsmasq.service
 sudo systemctl restart dnsmasq.service
 
-sudo cp cmdline.txt /tftpboot/cmdline.txt
-sudo cp exports /etc/exports
-sudo cp fstab /nfs/client1/etc/fstab
+sudo cp ${baseDir}/cmdline.txt /tftpboot/cmdline.txt
+sudo cp ${baseDir}/exports /etc/exports
+sudo cp ${baseDir}/fstab /nfs/client1/etc/fstab
 
 sudo systemctl enable rpcbind
 sudo systemctl restart rpcbind
