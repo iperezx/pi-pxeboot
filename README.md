@@ -32,16 +32,17 @@ sudo pip3 install docker-compose
 Setting up the docker base container (base on raspberry pi lite os):
 ```bash
 wget -O ospilite.zip https://downloads.raspberrypi.org/raspios_lite_armhf_latest
-sudo mkdir /home/pi/ospilite/
+sudo mkdir $HOME/ospilite/
 
-sudo unzip ospilite.zip -d /home/pi/ospilite/
-sudo losetup --show -fP /home/pi/ospilite/2020-08-20-raspios-buster-armhf-lite.img
+sudo unzip ospilite.zip -d $HOME/ospilite/
+sudo losetup --show -fP $HOME/ospilite/2020-08-20-raspios-buster-armhf-lite.img
 
 sudo mkdir /mnt/rootfs
 sudo mkdir /mnt/boot
 
 sudo mount /dev/loop0p1 /mnt/boot
 sudo mount /dev/loop0p2 /mnt/rootfs
+
 sudo tar -C /mnt/rootfs -czpf ospilite.tar.gz --numeric-owner .
 sudo tar -C /mnt/boot -czpf boot.tar.gz --numeric-owner .
 
