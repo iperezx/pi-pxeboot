@@ -28,7 +28,7 @@ sudo apt-get remove python-configparser
 sudo pip3 install docker-compose
 ```
 
-## Raspberry Pi Lite OS Base Image
+## Create a docker base image for Raspberry Pi Lite OS
 Setting up the docker base container (base on raspberry pi lite os):
 ```bash
 wget -O ospilite.zip https://downloads.raspberrypi.org/raspios_lite_armhf_latest
@@ -46,5 +46,6 @@ sudo tar -C /mnt/rootfs -czpf ospilite.tar.gz --numeric-owner .
 sudo tar -C /mnt/boot -czpf boot.tar.gz --numeric-owner .
 
 sudo docker build -t ospilite .
+sudo docker run -it ospilite:latest bash
 ```
 Note that loop0p1 is the boot config files and loop0p2 is the root filesystem.
