@@ -1,0 +1,70 @@
+version: "3.7"
+services:
+  nfs:
+    image: itsthenetwork/nfs-server-alpine:latest-arm
+    privileged: true
+    volumes:
+      - "/share/:/share/"
+    environment:
+      - "SHARED_DIRECTORY=/share/"
+      - "SYNC=true"
+    ports:
+      - "2049:2049"
+    networks:
+      pxe:
+        ipv4_address: 172.18.0.2
+  
+  tftp:
+    build: 
+      context: .
+      dockerfile: Dockerfile.tftp
+    privileged: true
+    volumes:
+      - type: volume
+        source: nfs-data
+        target: /var/tftpboot
+        volume:
+          nocopy: true
+    ports:
+      - "69:69/udp"
+      - "1069:1069/udp"
+      - "49152-49160/udp"
+    depends_on:
+      - nfs
+    networks:
+      pxe:
+        ipv4_address: 172.18.0.3
+  
+  pi:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    privileged: true
+    volumes:
+      - type: volume
+        source: nfs-data
+        target: /mnt/
+        volume:
+          nocopy: true
+    command: tail -f /dev/null
+    depends_on:
+      - tftp
+    networks:
+      pxe:
+        ipv4_address: 172.18.0.4
+
+
+volumes:
+  nfs-data:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: "addr=172.18.0.2,nfsvers=4,nolock,soft,rw"
+      device: ":/"
+
+networks:
+  pxe:
+    ipam:
+        driver: default
+        config:
+          - subnet: 172.18.0.0/16
