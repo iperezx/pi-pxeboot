@@ -3,8 +3,9 @@ services:
   nfs:
     image: itsthenetwork/nfs-server-alpine:latest-arm
     privileged: true
+    init: true
     volumes:
-      - "/share/:/share/"
+      - "nfs-data:/share/"
     environment:
       - "SHARED_DIRECTORY=/share/"
       - "SYNC=true"
@@ -19,6 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile.tftp
     privileged: true
+    init: true
     volumes:
       - type: volume
         source: nfs-data
@@ -39,13 +41,15 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
+    #image: iperezx/pi:latest
     privileged: true
+    init: true
     volumes:
       - type: volume
         source: nfs-data
         target: /mnt/
         volume:
-          nocopy: true
+          nocopy: false
     command: tail -f /dev/null
     depends_on:
       - tftp
@@ -53,14 +57,8 @@ services:
       pxe:
         ipv4_address: 172.18.0.4
 
-
 volumes:
   nfs-data:
-    driver: local
-    driver_opts:
-      type: nfs
-      o: "addr=172.18.0.2,nfsvers=4,nolock,soft,rw"
-      device: ":/"
 
 networks:
   pxe:

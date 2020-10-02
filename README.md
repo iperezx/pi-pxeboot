@@ -50,44 +50,16 @@ sudo tar -C /mnt/boot -czpf boot.tar.gz --numeric-owner .
 sudo docker build -t iperezx/ospilite:latest -f Dockerfile.ospilite .
 sudo docker run -it iperezx/ospilite:latest bash
 ```
-Note that ${LOOPDIR}p1 is the boot config files and ${LOOPDIR}p2 is the root filesystem.
+Note that `${LOOPDIR}p1` is the boot config files and `${LOOPDIR}p2` is the root filesystem.
 This was tested on both a Raspberry PI 4b 4GB and NVIDIA NX Board.
 
 ## Docker containers for pxe boot setup
-Docker-compose (for nfs and tftp server):
+Create docker containers:
 ```bash
-docker-compose up
+docker-compose up -d --build
 ```
 
-Option1 - Mount the nfs share directory to the host:
+Cleanup:
 ```bash
-mount NFS-SERVER-IP:/ /mnt/
-```
-
-Run container with the nfs share directory:
-```bash
-docker run -v /mnt/:/mnt/ iperezx/pi:latest bash
-```
-
-On the raspberry pi docker container:
-```bash
-export bootDir=/mnt/nfs/client1/
-
-export nfsIP="172.18.0.2"
-export tftpIP="172.18.0.3"
-
-echo "console=serial0,115200 console=tty1 root=/dev/nfs nfsroot=${nfsIP}:/nfs/client1,vers=4.1,proto=tcp,port=2049 rw ip=dhcp rootwait elevator=deadline" > /mnt/tftp/cmdline.txt
-
-touch ${bootDir}/ssh
-
-sudo rsync -xa --progress --exclude /mnt/ \
-    --exclude /etc/systemd/network/10-eth0.netdev \
-    --exclude /etc/systemd/network/11-eth0.network \
-    --exclude /etc/dnsmasq.conf \
-    / ${bootDir}
-
-sudo cp -r /boot/* /mnt/tftp/
-
-echo "proc       /proc        proc     defaults    0    0"   > ${bootDir}/etc/fstab
-echo "${nfsIP}:tftp/ /boot nfs4 defaults,nofail,noatime 0 2" >> ${bootDir}/etc/fstab
+docker-compose down && docker volume rm docker_nfs-data
 ```
