@@ -15,6 +15,26 @@ services:
       pxe:
         ipv4_address: 172.18.0.2
   
+  pi:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    #image: iperezx/pi:latest
+    privileged: true
+    init: true
+    volumes:
+      - type: volume
+        source: nfs-data
+        target: /mnt/
+        volume:
+          nocopy: false
+    command: tail -f /dev/null
+    depends_on:
+      - nfs
+    networks:
+      pxe:
+        ipv4_address: 172.18.0.4
+
   tftp:
     build: 
       context: .
@@ -32,30 +52,10 @@ services:
       - "1069:1069/udp"
       - "49152-49160/udp"
     depends_on:
-      - nfs
+      - pi
     networks:
       pxe:
         ipv4_address: 172.18.0.3
-  
-  pi:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    #image: iperezx/pi:latest
-    privileged: true
-    init: true
-    volumes:
-      - type: volume
-        source: nfs-data
-        target: /mnt/
-        volume:
-          nocopy: false
-    command: tail -f /dev/null
-    depends_on:
-      - tftp
-    networks:
-      pxe:
-        ipv4_address: 172.18.0.4
 
 volumes:
   nfs-data:
