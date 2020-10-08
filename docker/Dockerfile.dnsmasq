@@ -1,0 +1,9 @@
+FROM ubuntu:18.04
+RUN apt-get update && apt-get install -y dnsmasq
+EXPOSE 67/udp 547/udp
+RUN mkdir -p /var/lib/dnsmasq/
+RUN mkdir -p /tftpboot
+RUN ["touch", "/var/lib/dnsmasq/dnsmasq.leases"]
+COPY dnsmasq.conf /etc/dnsmasq.conf
+ENTRYPOINT ["dnsmasq"]
+CMD ["-d"]

@@ -35,22 +35,21 @@ services:
       pxe:
         ipv4_address: 172.18.0.4
 
-  tftp:
+  dnsmasq:
     build: 
       context: .
-      dockerfile: Dockerfile.tftp
+      dockerfile: Dockerfile.dnsmasq
     privileged: true
     init: true
     volumes:
       - type: volume
         source: nfs-data
-        target: /var/tftpboot
+        target: /tftpboot
         volume:
           nocopy: true
     ports:
       - "69:69/udp"
-      - "1069:1069/udp"
-      - "49152-49160/udp"
+      - "547:547/udp"
     depends_on:
       - pi
     networks:
