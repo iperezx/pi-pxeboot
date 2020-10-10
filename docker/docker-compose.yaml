@@ -1,20 +1,19 @@
 version: "3.7"
 services:
   nfs:
-    image: itsthenetwork/nfs-server-alpine:latest-arm
+    image: iperezx/nfs:latest
     privileged: true
     init: true
     volumes:
       - "nfs-data:/share/"
     environment:
       - "SHARED_DIRECTORY=/share/"
+      - "SHARED_DIRECTORY_2=/share/nfs/client1/"
       - "SYNC=true"
     ports:
       - "2049:2049"
-    networks:
-      pxe:
-        ipv4_address: 172.18.0.2
-  
+    network_mode: host
+
   pi:
     build: 
       context: .
@@ -31,9 +30,7 @@ services:
     command: tail -f /dev/null
     depends_on:
       - nfs
-    networks:
-      pxe:
-        ipv4_address: 172.18.0.4
+    network_mode: host
 
   dnsmasq:
     build: 
@@ -52,16 +49,7 @@ services:
       - "547:547/udp"
     depends_on:
       - pi
-    networks:
-      pxe:
-        ipv4_address: 172.18.0.3
+    network_mode: host
 
 volumes:
   nfs-data:
-
-networks:
-  pxe:
-    ipam:
-        driver: default
-        config:
-          - subnet: 172.18.0.0/16
