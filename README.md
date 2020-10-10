@@ -54,6 +54,14 @@ Note that `${LOOPDIR}p1` is the boot config files and `${LOOPDIR}p2` is the root
 This was tested on both a Raspberry PI 4b 4GB and NVIDIA NX Board.
 
 ## Docker containers for pxe boot setup
+Create custom nfs server:
+```bash
+cd $HOME
+git clone https://github.com/iperezx/nfs-server-alpine.git
+cd nfs-server-alpine
+sudo docker build -t iperezx/nfs:latest .
+```
+
 Create docker containers:
 ```bash
 docker-compose up -d --build
