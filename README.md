@@ -36,7 +36,7 @@ wget -O ospilite.zip https://downloads.raspberrypi.org/raspios_lite_armhf_latest
 sudo mkdir $HOME/ospilite/
 
 sudo unzip ospilite.zip -d $HOME/ospilite/
-sudo LOOPDIR=$(losetup --show -fP $HOME/ospilite/2020-08-20-raspios-buster-armhf-lite.img)
+LOOPDIR=$(sudo losetup --show -fP $HOME/ospilite/2020-08-20-raspios-buster-armhf-lite.img)
 
 sudo mkdir -p /mnt/rootfs
 sudo mkdir -p /mnt/boot

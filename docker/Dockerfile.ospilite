@@ -2,6 +2,4 @@ FROM scratch
 ADD ./ospilite.tar.gz /
 ADD ./boot.tar.gz /boot/
 RUN apt-get -y update && \
-    apt-get -y full-upgrade && \
-    apt-get -y install rpi-eeprom && \
-    apt-get -y install rsync dnsmasq nfs-kernel-server
+    apt-get -y install rpi-eeprom

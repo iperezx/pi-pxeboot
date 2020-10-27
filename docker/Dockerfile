@@ -1,4 +1,4 @@
-FROM iperezx/ospilite:pi
+FROM iperezx/ospilite:latest
 ENV rootfsDir=/mnt/nfs/client1/ \
     bootDir=/mnt/tftp/ \
     nfsIP="10.0.0.18"
